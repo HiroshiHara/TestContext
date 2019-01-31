@@ -52,7 +52,7 @@ public class ItemStock {
 		if (!hasItem(itemId)) {
 			throw new IllegalStateException("商品IDが登録されていません");
 		}
-		if (itemStock.get(itemId) >= 0) {
+		if (itemStock.get(itemId) > 0) {
 			return true;
 		}
 		return false;
@@ -60,12 +60,12 @@ public class ItemStock {
 	
 	/**
 	 * 商品IDをキー値に在庫数を指定します。
-	 * 既に同じ商品IDが登録されている場合は第二引数の分だけ在庫数を調整します。
+	 * 既に同じ商品IDが登録されている場合は第二引数の分だけ在庫数を加算します。
 	 * @param itemId 商品ID
 	 * @param num 在庫数
 	 * @exception IllegalArgumentException
 	 */
-	public void adjustItemStock(String itemId, int num) {
+	public void incItemStock(String itemId, int num) {
 		if (isItemIdNullOrEmpty(itemId)) {
 			throw new IllegalArgumentException("商品IDに無効な値が渡されました");
 		}
@@ -81,6 +81,32 @@ public class ItemStock {
 		}
 	}
 	
+	/**
+	 * 商品IDをキー値に在庫数を減算します。
+	 * 指定した商品が登録されていない、または在庫数が負数になるときIllegalStateExceptionが送出されます。
+	 * @param itemId 商品ID
+	 * @param num 在庫数
+	 * @exception IllegalArgumentException
+	 * @exception IllegalStateException
+	 */
+	public void decItemStock(String itemId, int num) {
+		if (isItemIdNullOrEmpty(itemId)) {
+			throw new IllegalArgumentException("商品IDに無効な値が渡されました");
+		}
+		if (num < 0) {
+			throw new IllegalArgumentException("数量に無効な値が渡されました");
+		}
+		if (!hasItem(itemId)) {
+			throw new IllegalStateException("商品IDが登録されていません");
+		}
+		int nowCount = itemStock.get(itemId);
+		nowCount -= num;
+		if (nowCount < 0) {
+			throw new IllegalStateException("在庫数がマイナスになります");
+		}
+		itemStock.put(itemId, nowCount);
+	}
+		
 	/**
 	 * 商品IDをキーに在庫数を取得します。
 	 * 指定された商品IDが登録されていない場合、0を返します。
